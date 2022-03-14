@@ -24,6 +24,7 @@ const defaultOptions = {
     outputDir: undefined,
     remap: false,
     compiler: require('sass'),
+    onError: null,
 };
 
 function monkeypatch(cls, fn) {
@@ -41,7 +42,7 @@ const compileSass = _debounce(function(eleventyInstance, options) {
     const sass = require('gulp-sass')(options.compiler);
     vfs.src(options.watch)
         .pipe(gulpIf(options.sourcemaps, sourcemaps.init()))
-        .pipe(sass(options.sassOptions).on('error', sass.logError))
+        .pipe(sass(options.sassOptions).on('error', options.onError || sass.logError))
         .pipe(gulpIf(options.autoprefixer, prefix()))
         .pipe(gulpIf(options.cleanCSS, cleanCSS(options.cleanCSSOptions)))
         .pipe(gulpIf(options.sourcemaps, sourcemaps.write('.')))
